@@ -103,7 +103,10 @@
 
 <script>
     
+const SUPABASE_URL = "https://vfcrdvdzufyzfogyddxy.supabase.co";
+const SUPABASE_KEY = "sb_publishable__LQvFsHz_GTYIhA-h0ciow_HOnDfTFD";
 
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let agua = 0;
 
@@ -195,12 +198,35 @@ ${mensagem}
     mostrarResultado(pontos, resultado, mensagem, classe);
     carregarHistorico();
 }
+//Salvar histórico
+//function salvarHistorico(dia) {
+  //  let historico = JSON.parse(localStorage.getItem("historico")) || [];
+    //historico.unshift(dia);
+    //localStorage.setItem("historico", JSON.stringify(historico));
+}
 
-function salvarHistorico(dia) {
+//Conexão banco de dados
+async function salvarHistorico(dia) {
+
+    // salva no localStorage (backup)
     let historico = JSON.parse(localStorage.getItem("historico")) || [];
     historico.unshift(dia);
     localStorage.setItem("historico", JSON.stringify(historico));
+
+    // salva no banco
+    try {
+        const { error } = await supabase
+            .from('dias')
+            .insert([dia]);
+
+        if (error) {
+            console.error("Erro no banco:", error);
+        }
+    } catch (err) {
+        console.error("Erro geral:", err);
+    }
 }
+//fim do banco
 
 function carregarHistorico() {
     let historico = JSON.parse(localStorage.getItem("historico")) || [];
