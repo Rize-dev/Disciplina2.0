@@ -92,16 +92,16 @@
         <button onclick="addAgua()">+1 copo</button>
         <button onclick="resetAgua()">Reset</button>
     </div>
+
     <button onclick="finalizarDia()">Finalizar Dia</button>
 
     <div id="resultado" class="result"></div>
     <div class="history" id="historico"></div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <script>
-
-    <script>
 // 🔒 (DESATIVADO TEMPORARIAMENTE PRA NÃO QUEBRAR)
 // const SUPABASE_URL = "https://vfcrdvdzufyzfogyddxy.supabase.co";
 // const SUPABASE_KEY = "sb_publishable__...";
@@ -109,13 +109,11 @@
 
 let agua = 0;
 
-// 🔥 GARANTE QUE O CONTADOR INICIA CERTO
 document.addEventListener("DOMContentLoaded", () => {
     atualizarAgua();
     carregarHistorico();
 });
 
-// 💧 ÁGUA
 function addAgua() {
     if (agua < 5) {
         agua++;
@@ -133,7 +131,6 @@ function atualizarAgua() {
     if (el) el.innerText = agua;
 }
 
-// 🎯 FINALIZAR DIA
 function finalizarDia() {
     let pontos = 0;
 
@@ -154,7 +151,6 @@ function finalizarDia() {
     let hora = agora.getHours();
     let minutos = agora.getMinutes();
 
-    // ⛔ Penalidade sono
     if ((hora === 0 && minutos > 30) || hora >= 1) {
         pontos--;
     }
@@ -181,7 +177,6 @@ function finalizarDia() {
         classe = "derrota";
     }
 
-    // 🔥 POPUP
     alert(`
 ${resultado}
 
@@ -203,14 +198,12 @@ ${mensagem}
     carregarHistorico();
 }
 
-// 💾 LOCAL STORAGE
 function salvarHistorico(dia) {
     let historico = JSON.parse(localStorage.getItem("historico")) || [];
     historico.unshift(dia);
     localStorage.setItem("historico", JSON.stringify(historico));
 }
 
-// 📊 HISTÓRICO
 function carregarHistorico() {
     let historico = JSON.parse(localStorage.getItem("historico")) || [];
     let div = document.getElementById("historico");
@@ -227,7 +220,6 @@ function carregarHistorico() {
     });
 }
 
-// 📢 RESULTADO NA TELA
 function mostrarResultado(pontos, resultado, mensagem, classe) {
     let div = document.getElementById("resultado");
 
@@ -240,7 +232,6 @@ function mostrarResultado(pontos, resultado, mensagem, classe) {
         <p>${mensagem}</p>
     `;
 }
-</script>
 </script>
 
 </body>
