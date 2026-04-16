@@ -99,14 +99,11 @@
     <div class="history" id="historico"></div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <script>
     
-const SUPABASE_URL = "https://vfcrdvdzufyzfogyddxy.supabase.co";
-const SUPABASE_KEY = "sb_publishable__LQvFsHz_GTYIhA-h0ciow_HOnDfTFD";
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let agua = 0;
 
@@ -210,13 +207,8 @@ async function salvarHistorico(dia) {
 
     // salva no banco
     try {
-        const { error } = await supabase
-            .from('dias')
-            .insert([dia]);
-
-        if (error) {
-            console.error("Erro no banco:", error);
-        }
+        const { error } = await supabase.from('dias').insert([dia]);
+        if (error) console.error("Erro no banco:", error);
     } catch (err) {
         console.error("Erro geral:", err);
     }
