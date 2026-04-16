@@ -92,7 +92,6 @@
         <button onclick="addAgua()">+1 copo</button>
         <button onclick="resetAgua()">Reset</button>
     </div>
-
     <button onclick="finalizarDia()">Finalizar Dia</button>
 
     <div id="resultado" class="result"></div>
@@ -102,13 +101,21 @@
 
 <script>
 
-    const SUPABASE_URL = "https://vfcrdvdzufyzfogyddxy.supabase.co";
-const SUPABASE_KEY = "sb_publishable__LQvFsHz_GTYIhA-h0ciow_HOnDfTFD";
-
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    <script>
+// 🔒 (DESATIVADO TEMPORARIAMENTE PRA NÃO QUEBRAR)
+// const SUPABASE_URL = "https://vfcrdvdzufyzfogyddxy.supabase.co";
+// const SUPABASE_KEY = "sb_publishable__...";
+// const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let agua = 0;
 
+// 🔥 GARANTE QUE O CONTADOR INICIA CERTO
+document.addEventListener("DOMContentLoaded", () => {
+    atualizarAgua();
+    carregarHistorico();
+});
+
+// 💧 ÁGUA
 function addAgua() {
     if (agua < 5) {
         agua++;
@@ -122,9 +129,11 @@ function resetAgua() {
 }
 
 function atualizarAgua() {
-    document.getElementById("aguaQtd").innerText = agua;
+    const el = document.getElementById("aguaQtd");
+    if (el) el.innerText = agua;
 }
 
+// 🎯 FINALIZAR DIA
 function finalizarDia() {
     let pontos = 0;
 
@@ -145,7 +154,7 @@ function finalizarDia() {
     let hora = agora.getHours();
     let minutos = agora.getMinutes();
 
-    // Penalidade sono
+    // ⛔ Penalidade sono
     if ((hora === 0 && minutos > 30) || hora >= 1) {
         pontos--;
     }
@@ -155,22 +164,31 @@ function finalizarDia() {
     let classe = "";
 
     if (pontos === 6) {
-        resultado = "VITÓRIA";
-        mensagem = "Perfeito. Continue assim.";
+        resultado = "🔥 VITÓRIA";
+        mensagem = "Perfeito. Você está no controle total.";
         classe = "vitoria";
     } else if (pontos === 5) {
-        resultado = "BOM";
-        mensagem = "Dia sólido.";
+        resultado = "✅ BOM";
+        mensagem = "Dia sólido, mas ainda pode melhorar.";
         classe = "bom";
     } else if (pontos === 4) {
-        resultado = "FRACO";
-        mensagem = "Sem redes sociais hoje.";
+        resultado = "⚠️ FRACO";
+        mensagem = "Você deixou pontos na mesa.";
         classe = "fraco";
     } else {
-        resultado = "DERROTA";
-        mensagem = "-R$20 + 30 contatos extras amanhã.";
+        resultado = "❌ DERROTA";
+        mensagem = "Você falhou hoje. Compensa amanhã.";
         classe = "derrota";
     }
+
+    // 🔥 POPUP
+    alert(`
+${resultado}
+
+Pontos: ${pontos}/6
+
+${mensagem}
+    `);
 
     let registro = {
         data: agora.toLocaleDateString(),
@@ -185,25 +203,35 @@ function finalizarDia() {
     carregarHistorico();
 }
 
+// 💾 LOCAL STORAGE
 function salvarHistorico(dia) {
     let historico = JSON.parse(localStorage.getItem("historico")) || [];
     historico.unshift(dia);
     localStorage.setItem("historico", JSON.stringify(historico));
 }
 
+// 📊 HISTÓRICO
 function carregarHistorico() {
     let historico = JSON.parse(localStorage.getItem("historico")) || [];
     let div = document.getElementById("historico");
 
+    if (!div) return;
+
     div.innerHTML = "<h3>Histórico</h3>";
 
     historico.slice(0, 7).forEach(d => {
-        div.innerHTML += `<div>${d.data} ${d.hora} - ${d.pontos} pts - ${d.resultado} - 💧${d.agua}/5</div>`;
+        div.innerHTML += `
+        <div>
+            ${d.data} ${d.hora} - ${d.pontos} pts - ${d.resultado} - 💧${d.agua}/5
+        </div>`;
     });
 }
 
+// 📢 RESULTADO NA TELA
 function mostrarResultado(pontos, resultado, mensagem, classe) {
     let div = document.getElementById("resultado");
+
+    if (!div) return;
 
     div.className = "result " + classe;
     div.innerHTML = `
@@ -212,9 +240,7 @@ function mostrarResultado(pontos, resultado, mensagem, classe) {
         <p>${mensagem}</p>
     `;
 }
-
-carregarHistorico();
-atualizarAgua();
+</script>
 </script>
 
 </body>
