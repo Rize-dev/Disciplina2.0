@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Sistema de Disciplina</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #0f172a;
+        color: #fff;
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .container {
+        max-width: 400px;
+        width: 100%;
+        background: #1e293b;
+        padding: 20px;
+        border-radius: 10px;
+    }
+
+    h1 {
+        text-align: center;
+    }
+
+    .task {
+        margin: 10px 0;
+    }
+
+    .water {
+        margin-top: 10px;
+        text-align: center;
+    }
+
+    .water button {
+        width: auto;
+        padding: 8px 12px;
+        margin: 5px;
+        background: #3b82f6;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        margin-top: 15px;
+        border: none;
+        border-radius: 5px;
+        background: #22c55e;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .result {
+        margin-top: 20px;
+        padding: 10px;
+        border-radius: 5px;
+        text-align: center;
+    }
+
+    .vitoria { background: #16a34a; }
+    .bom { background: #2563eb; }
+    .fraco { background: #ca8a04; }
+    .derrota { background: #dc2626; }
+
+    .history {
+        margin-top: 20px;
+        font-size: 14px;
+    }
+
+    .history div {
+        border-bottom: 1px solid #334155;
+        padding: 5px 0;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🔥 Disciplina</h1>
+
+    <div class="task"><input type="checkbox" id="contatos"> 30 contatos</div>
+    <div class="task"><input type="checkbox" id="porno"> Sem pornografia</div>
+    <div class="task"><input type="checkbox" id="treino"> Treino feito</div>
+    <div class="task"><input type="checkbox" id="produtivo"> 6h produtivas</div>
+    <div class="task"><input type="checkbox" id="sono"> Dormir até 00:00</div>
+
+    <div class="water">
+        <p>💧 Água: <span id="aguaQtd">0</span>/5</p>
+        <button onclick="addAgua()">+1 copo</button>
+        <button onclick="resetAgua()">Reset</button>
+    </div>
+
+    <button onclick="finalizarDia()">Finalizar Dia</button>
+
+    <div id="resultado" class="result"></div>
+    <div class="history" id="historico"></div>
+</div>
+
+<script>
+let agua = 0;
+
+function addAgua() {
+    if (agua < 5) {
+        agua++;
+        atualizarAgua();
+    }
+}
+
+function resetAgua() {
+    agua = 0;
+    atualizarAgua();
+}
+
+function atualizarAgua() {
+    document.getElementById("aguaQtd").innerText = agua;
+}
+
+function finalizarDia() {
+    let pontos = 0;
+
+    let contatos = document.getElementById('contatos').checked;
+    let porno = document.getElementById('porno').checked;
+    let treino = document.getElementById('treino').checked;
+    let produtivo = document.getElementById('produtivo').checked;
+    let sono = document.getElementById('sono').checked;
+
+    if (contatos) pontos++;
+    if (porno) pontos++;
+    if (treino) pontos++;
+    if (produtivo) pontos++;
+    if (sono) pontos++;
+    if (agua >= 5) pontos++;
+
+    let agora = new Date();
+    let hora = agora.getHours();
+    let minutos = agora.getMinutes();
+
+    // Penalidade sono
+    if ((hora === 0 && minutos > 30) || hora >= 1) {
+        pontos--;
+    }
+
+    let resultado = "";
+    let mensagem = "";
+    let classe = "";
+
+    if (pontos === 6) {
+        resultado = "VITÓRIA";
+        mensagem = "Perfeito. Continue assim.";
+        classe = "vitoria";
+    } else if (pontos === 5) {
+        resultado = "BOM";
+        mensagem = "Dia sólido.";
+        classe = "bom";
+    } else if (pontos === 4) {
+        resultado = "FRACO";
+        mensagem = "Sem redes sociais hoje.";
+        classe = "fraco";
+    } else {
+        resultado = "DERROTA";
+        mensagem = "-R$20 + 30 contatos extras amanhã.";
+        classe = "derrota";
+    }
+
+    let registro = {
+        data: agora.toLocaleDateString(),
+        hora: agora.toLocaleTimeString(),
+        pontos,
+        resultado,
+        agua
+    };
+
+    salvarHistorico(registro);
+    mostrarResultado(pontos, resultado, mensagem, classe);
+    carregarHistorico();
+}
+
+function salvarHistorico(dia) {
+    let historico = JSON.parse(localStorage.getItem("historico")) || [];
+    historico.unshift(dia);
+    localStorage.setItem("historico", JSON.stringify(historico));
+}
+
+function carregarHistorico() {
+    let historico = JSON.parse(localStorage.getItem("historico")) || [];
+    let div = document.getElementById("historico");
+
+    div.innerHTML = "<h3>Histórico</h3>";
+
+    historico.slice(0, 7).forEach(d => {
+        div.innerHTML += `<div>${d.data} ${d.hora} - ${d.pontos} pts - ${d.resultado} - 💧${d.agua}/5</div>`;
+    });
+}
+
+function mostrarResultado(pontos, resultado, mensagem, classe) {
+    let div = document.getElementById("resultado");
+
+    div.className = "result " + classe;
+    div.innerHTML = `
+        <h2>${resultado}</h2>
+        <p>${pontos} pontos</p>
+        <p>${mensagem}</p>
+    `;
+}
+
+carregarHistorico();
+atualizarAgua();
+</script>
+
+</body>
+</html>
