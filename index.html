@@ -151,9 +151,17 @@ function finalizarDia() {
     let hora = agora.getHours();
     let minutos = agora.getMinutes();
 
-    if ((hora === 0 && minutos > 30) || hora >= 1) {
-        pontos--;
-    }
+    let agora = new Date();
+let hora = agora.getHours();
+let minutos = agora.getMinutes();
+
+// transforma tudo em minutos do dia
+let minutosTotais = hora * 60 + minutos;
+
+// 00:30 = 30 minutos
+if (minutosTotais > 30 && hora < 6) {
+    pontos--;
+}
 
     let resultado = "";
     let mensagem = "";
